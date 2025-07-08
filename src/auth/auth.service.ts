@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { signinDTO, signUpDTO } from './dtos/auth';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '../../generated/prisma';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +29,7 @@ export class AuthService {
       data: {
         ...data,
         password: hashedPassword,
+        role: data.role ?? Role.CLIENTE, // usa CLIENTE como padrão
       },
     });
 
@@ -35,6 +37,8 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
+     
     };
   }
 
@@ -59,10 +63,12 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role, 
     });
 
     return {
       accessToken, 
+      role: user.role,
     };
   }
 }

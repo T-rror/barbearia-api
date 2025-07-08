@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { Role } from '../../../generated/prisma';
 
 export class signUpDTO {
   @IsNotEmpty()
@@ -7,6 +8,8 @@ export class signUpDTO {
   email: string;
   @IsNotEmpty()
   password: string;
+  @IsOptional()
+  role?: Role; // CLIENTE ou BARBEIRO
 }
 
 export class signinDTO {
