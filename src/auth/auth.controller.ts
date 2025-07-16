@@ -21,5 +21,10 @@ export class AuthController {
   @Get('me')
   async me(@Req() req) {
     return req.user;
+  } 
+
+   @Post('magic-login')
+  async magicLogin(@Body('email') email: string) {
+    return this.authService.magicLogin(email);
   }
 }
