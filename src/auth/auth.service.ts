@@ -73,33 +73,14 @@ export class AuthService {
   } 
 
 
-   async magicLogin(email: string) {
-    let user = await this.prismaService.user.findUnique({ where: { email } });
+  async checkEmail(email: string) {
+  const user = await this.prismaService.user.findUnique({
+    where: { email },
+  });
 
-    // Se o usuário não existir, cria
-    if (!user) {
-      user = await this.prismaService.user.create({
-        data: {
-          email,
-          
-          name: '', // você pode ajustar isso depois
-          password: '', // senha vazia para login mágico
-          role: Role.CLIENTE, // Define o papel padrão como CLIENTE
-        },
-      });
-    }
-
-    // Gera JWT
-    const payload = {
-      id: user.id,
-      
-      email: user.email,
-      role: user.role, // Inclui o papel do usuário no payload
-    };
-
-    const token = await this.jwtService.signAsync(payload);
-
-    return { token, user };
- 
+  return {
+    exists: !!user,
+  };
 }
+
 }
