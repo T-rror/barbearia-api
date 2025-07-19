@@ -1,12 +1,18 @@
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 import { Role } from '../../../generated/prisma';
 
 export class signUpDTO {
-  @IsOptional()
+  @IsString()
   @IsNotEmpty()
-  name: string | null;
+  name: string;
   @IsEmail()
   email: string;
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/, {
+    message: 'Telefone deve estar no formato (XX)XXXXX-XXXX',
+  })
+  phone: string;  
   @IsNotEmpty()
   password: string;
   @IsOptional()

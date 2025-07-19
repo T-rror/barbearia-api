@@ -31,12 +31,20 @@ export class AuthService {
         password: hashedPassword,
         role: data.role ?? Role.CLIENTE, // usa CLIENTE como padrão
       },
+      select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      role: true,
+    },
     });
 
     return {
       id: user.id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       role: user.role,
      
     };

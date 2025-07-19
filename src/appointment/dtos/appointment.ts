@@ -1,7 +1,5 @@
 export class CreateAppointmentDto {
-  name: string;
-  phone: string;
-  date: Date;
+  date: string;
   time: string;
   service: string;
 }

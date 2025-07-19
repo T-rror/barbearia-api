@@ -19,41 +19,27 @@ export class AppointmentService {
     orderBy: { time: 'asc' },
   });
 }
-   async create(dto: CreateAppointmentDto, userId: string) {
-  // Busca o usuário no banco de dados
+  async create(dto: CreateAppointmentDto, userId: string) {
   const user = await this.prisma.user.findUnique({
     where: { id: userId },
   });
 
-  // Verificação robusta do nome do usuário (null, undefined ou string vazia)
-  const userNameIsEmpty = !user?.name || user.name.trim() === '';
-
-  // Se o nome do usuário estiver em branco e o DTO tiver nome, atualiza o usuário
-  if (user && userNameIsEmpty && dto.name) {
-    console.log(`Atualizando nome do usuário (${user.id}) para: ${dto.name}`);
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { name: dto.name },
-    });
-  } else {
-    console.log(`Não atualizou nome. Estado atual do usuário:`, user);
+  if (!user) {
+    throw new Error('Usuário não encontrado');
   }
 
-  // Cria o agendamento normalmente
   return this.prisma.appointment.create({
     data: {
-      name: dto.name,
-      phone: dto.phone,
+      name: user.name,
+      phone: user.phone,
       date: new Date(dto.date),
       time: dto.time,
       service: dto.service,
       userId,
     },
     include: {
-      user: true, // opcional: já retorna os dados do user vinculado
+      user: true,
     },
   });
 }
-
-
 }

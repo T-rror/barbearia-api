@@ -1,2 +1,3 @@
 -- AlterTable
-ALTER TABLE "User" ALTER COLUMN "name" DROP NOT NULL;
+ALTER TABLE "User" ALTER COLUMN "name" SET NOT NULL;
+
