@@ -9,28 +9,28 @@ datasource db {
 }
 
 model User {
-  id        String       @id @default(uuid()) @db.Uuid
-  name      String
-  email     String       @unique
-  password  String
-  phone     String
-  role      Role         @default(CLIENTE)
-  createdAt DateTime     @default(now())
-  appointments Appointment[] // Relacionamento 1:N
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(CLIENTE)
+  createdAt    DateTime      @default(now())
+  phone        String
+  appointments Appointment[]
 }
 
 model Appointment {
-  id           String    @id @default(uuid()) @db.Uuid
-  name         String
-  phone        String
-  date         DateTime // Corrigido para tipo nativo
-  time         String    // Se quiser manter separado como "14:00"
-  concluido    Boolean  @default(false)
-  service      String
-  createdAt    DateTime  @default(now())
-  concludedAt  DateTime?
-  userId       String?    @db.Uuid
-  user         User?      @relation(fields: [userId], references: [id])
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  phone       String
+  date        DateTime
+  time        String
+  service     String
+  createdAt   DateTime  @default(now())
+  concludedAt DateTime?
+  userId      String?   @db.Uuid
+  concluido   Boolean   @default(false)
+  user        User?     @relation(fields: [userId], references: [id])
 }
 
 enum Role {
