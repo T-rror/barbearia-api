@@ -25,6 +25,7 @@ model Appointment {
   phone        String
   date         DateTime // Corrigido para tipo nativo
   time         String    // Se quiser manter separado como "14:00"
+  concluido    Boolean  @default(false)
   service      String
   createdAt    DateTime  @default(now())
   concludedAt  DateTime?
