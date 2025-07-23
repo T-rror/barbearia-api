@@ -3,17 +3,26 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule); 
+  const app = await NestFactory.create(AppModule);
+
   app.enableCors({
     origin: [
-             'https://barbearia-app-tau.vercel.app',
-             'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app' // ou '*' se quiser liberar geral (não recomendado para produção)
+      'http://localhost:3000',
+      'https://barbearia-app-tau.vercel.app',
+      'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app',
     ],
-             methods: ['GET', 'POST', 'PUT', 'DELETE'],
-             credentials: true, // se você estiver usando cookies/autenticação
-             allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
+
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(process.env.PORT || 3001);
+
+  const port = process.env.PORT || 3001;
+  await app.listen(port, () => {
+    console.log(`🚀 Servidor rodando na porta ${port}`);
+  });
 }
 bootstrap();
