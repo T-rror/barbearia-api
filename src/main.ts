@@ -5,8 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule); 
   app.enableCors({
-    origin: 'https://barbearia-app-tau.vercel.app', // ou '*' se quiser liberar geral (não recomendado para produção)
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: [
+             'https://barbearia-app-tau.vercel.app',
+             'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app' // ou '*' se quiser liberar geral (não recomendado para produção)
+    ],
+             methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // se você estiver usando cookies/autenticação
   });
   app.useGlobalPipes(new ValidationPipe());
