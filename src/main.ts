@@ -6,9 +6,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule); 
   app.enableCors({
     origin: 'https://barbearia-app-tau.vercel.app', // ou '*' se quiser liberar geral (não recomendado para produção)
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // se você estiver usando cookies/autenticação
   });
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen('https://barbearia-app-tau.vercel.app');
+  await app.listen('process.env.PORT || 3001');
 }
 bootstrap();
