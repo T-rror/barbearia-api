@@ -10,6 +10,6 @@ async function bootstrap() {
     credentials: true, // se você estiver usando cookies/autenticação
   });
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen('process.env.PORT || 3001');
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
