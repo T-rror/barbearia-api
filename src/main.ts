@@ -10,7 +10,8 @@ async function bootstrap() {
              'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app' // ou '*' se quiser liberar geral (não recomendado para produção)
     ],
              methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true, // se você estiver usando cookies/autenticação
+             credentials: true, // se você estiver usando cookies/autenticação
+             allowedHeaders: ['Content-Type', 'Authorization'],
   });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(process.env.PORT || 3001);
