@@ -11,6 +11,7 @@ async function bootstrap() {
       'https://barbearia-app-tau.vercel.app',
       "https://barbearia-qhdvr28qa-mateus-projects-4fb9ed17.vercel.app",
       'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app',
+      "https://barbearia-app-git-main-mateus-projects-4fb9ed17.vercel.app/"
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
