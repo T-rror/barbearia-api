@@ -1,9 +1,10 @@
 import { Body, Controller, Get, Post, Param, Req, UseGuards, Patch, ParseUUIDPipe, ForbiddenException  } from '@nestjs/common';
 import { Request } from 'express';
 import { AppointmentService } from './appointment.service';
-import { CreateAppointmentDto } from './dtos/appointment';
+import { CreateAppointmentAdminDto, CreateAppointmentDto } from './dtos/appointment';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
+import { AdminGuard } from '../auth/admin.guards'; // ajuste o caminho
 
 
 
@@ -19,6 +20,11 @@ export class AppointmentController {
     return this.appointmentService.create(body, userId);
   }
 
+ @Post('admin')
+@UseGuards(AuthGuard, AdminGuard) // precisa estar autenticado e ser admin
+createByAdmin(@Body() dto: CreateAppointmentAdminDto) {
+  return this.appointmentService.createByAdmin(dto);
+}
   @Get()
   async findAll() {
     return this.appointmentService.findAll();
@@ -40,7 +46,7 @@ export class AppointmentController {
 @UseGuards(AuthGuard)
 async findConcluidos(@Req() req: AuthenticatedRequest) {
   const user = req.user;
-  if (user.role !== 'BAREIRO') {
+  if (user.role !== 'BARBEIRO') {
     throw new ForbiddenException('Acesso negado');
   }
   return this.appointmentService.findConcluidos();

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateAppointmentDto } from './dtos/appointment';
+import { CreateAppointmentAdminDto, CreateAppointmentDto } from './dtos/appointment';
 
 @Injectable()
 export class AppointmentService {
@@ -61,6 +61,22 @@ export class AppointmentService {
     },
     orderBy: { date: 'desc' },
     include: { user: true },
+  });
+}
+
+async createByAdmin(dto: CreateAppointmentAdminDto) {
+  // aqui o admin cria agendamento pra qualquer cliente
+  console.log('Recebido no backend:', dto);
+
+  return this.prisma.appointment.create({
+    data: {
+      name: dto.name,
+      phone: dto.phone,
+      date: new Date(dto.date),
+      time: dto.time,
+      service: dto.service,
+      createdByAdmin: true
+    }
   });
 }
 

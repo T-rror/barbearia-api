@@ -31,6 +31,7 @@ model Appointment {
   userId      String?   @db.Uuid
   concluido   Boolean   @default(false)
   user        User?     @relation(fields: [userId], references: [id])
+  createdByAdmin Boolean @default(false) // ← novo campo
 }
 
 enum Role {
