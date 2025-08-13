@@ -79,7 +79,20 @@ async createByAdmin(dto: CreateAppointmentAdminDto) {
     }
   });
 }
+async cancelarAgendamento(id: string) {
+  return this.prisma.appointment.update(
+    {
+      where: {id},
+      data: { status: 'CANCELADO' },
 
-
+    });
  
+}
+
+async findCancelados() {
+  return this.prisma.appointment.findMany({
+    where: { status: 'CANCELADO' },
+  });
+}
+
 }

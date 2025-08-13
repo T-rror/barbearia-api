@@ -28,6 +28,7 @@ model Appointment {
   service     String
   createdAt   DateTime  @default(now())
   concludedAt DateTime?
+  status    Status   @default(PENDENTE)
   userId      String?   @db.Uuid
   concluido   Boolean   @default(false)
   user        User?     @relation(fields: [userId], references: [id])
@@ -37,4 +38,11 @@ model Appointment {
 enum Role {
   CLIENTE
   BARBEIRO
+  ADMIN
+}
+
+enum Status {
+  PENDENTE
+  CONCLUIDO
+  CANCELADO
 }
