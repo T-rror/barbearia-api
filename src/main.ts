@@ -13,9 +13,9 @@ async function bootstrap() {
       'https://barbearia-jimbguh6w-mateus-projects-4fb9ed17.vercel.app',
       "https://barbearia-app-git-main-mateus-projects-4fb9ed17.vercel.app/"
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
@@ -28,3 +28,4 @@ async function bootstrap() {
   });
 }
 bootstrap();
+  

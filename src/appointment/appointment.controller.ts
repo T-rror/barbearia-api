@@ -8,9 +8,7 @@ import {
   UseGuards,
   Patch,
   ParseUUIDPipe,
-  ForbiddenException,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { AppointmentService } from './appointment.service';
 import {
   CreateAppointmentAdminDto,
@@ -18,68 +16,65 @@ import {
 } from './dtos/appointment';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
-import { AdminGuard, RolesGuard } from '../auth/admin.guards'; // ajuste o caminho
+import { RolesGuard } from '../auth/admin.guards';
 
 @Controller('appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 
+  // Criação de agendamento normal (usuário logado)
   @UseGuards(AuthGuard)
   @Post()
   async create(
     @Body() body: CreateAppointmentDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    // req.user já está tipado, sem precisar usar "as"
     const userId = req.user.id;
-    return this.appointmentService.create(body, userId);
-  }
-  @Post('admin')
-  @UseGuards(AuthGuard, new RolesGuard(['ADMIN', 'BARBEIRO']))
-  createByAdminOuBarbeiro(@Body() dto: CreateAppointmentAdminDto) {
-    return this.appointmentService.createByAdmin(dto);
+    const appointment = await this.appointmentService.create(body, userId);
+    return { success: true, appointment };
   }
 
+  // Criação de agendamento por admin ou barbeiro
+  @UseGuards(AuthGuard, new RolesGuard(['ADMIN', 'BARBEIRO']))
+  @Post('admin')
+  async createByAdmin(@Body() dto: CreateAppointmentAdminDto) {
+    const appointment = await this.appointmentService.createByAdmin(dto);
+    return { success: true, appointment };
+  }
+
+  // Listar todos os agendamentos (pendentes, concluídos e cancelados)
+  @UseGuards(AuthGuard)
   @Get()
   async findAll() {
-    return this.appointmentService.findAll();
+    const agendamentos = await this.appointmentService.findAll();
+
+    const pendentes = agendamentos.filter(a => a.status === 'PENDENTE');
+    const concluidos = agendamentos.filter(a => a.status === 'CONCLUIDO');
+    const cancelados = agendamentos.filter(a => a.status === 'CANCELADO');
+
+    return { success: true, pendentes, concluidos, cancelados };
   }
 
+  // Listar agendamentos por data
   @Get('by-date/:date')
   async findByDate(@Param('date') date: string) {
-    return this.appointmentService.findByDate(date);
+    const appointments = await this.appointmentService.findByDate(date);
+    return { success: true, appointments };
   }
 
+  // Marcar agendamento como concluído
   @UseGuards(AuthGuard)
   @Patch(':id/concluir')
-  concluirAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.appointmentService.marcarComoConcluido(id);
+  async concluirAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
+    const appointment = await this.appointmentService.marcarComoConcluido(id);
+    return { success: true, appointment };
   }
 
-  @Get('concluidos')
-  @UseGuards(AuthGuard)
-  async findConcluidos(@Req() req: AuthenticatedRequest) {
-    const user = req.user;
-    if (user.role !== 'BARBEIRO') {
-      throw new ForbiddenException('Acesso negado');
-    }
-    return this.appointmentService.findConcluidos();
-  }
-
+  // Marcar agendamento como cancelado
   @UseGuards(AuthGuard)
   @Patch(':id/cancelar')
-  cancelarAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.appointmentService.cancelarAgendamento(id);
+  async cancelarAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
+    const appointment = await this.appointmentService.cancelarAgendamento(id);
+    return { success: true, appointment };
   }
-  @UseGuards(AuthGuard)
-@Get('cancelados')
-async findCancelados(@Req() req: AuthenticatedRequest) {
-  const user = req.user;
-  if (user.role !== 'BARBEIRO') {
-    throw new ForbiddenException('Acesso negado');
-  }
-  return this.appointmentService.findCancelados();
-}
-
-
 }

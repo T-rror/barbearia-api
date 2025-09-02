@@ -28,9 +28,9 @@ model Appointment {
   service     String
   createdAt   DateTime  @default(now())
   concludedAt DateTime?
+  cancelAt    DateTime?
   status    Status   @default(PENDENTE)
   userId      String?   @db.Uuid
-  concluido   Boolean   @default(false)
   user        User?     @relation(fields: [userId], references: [id])
   createdByAdmin Boolean @default(false) // ← novo campo
 }

@@ -7,6 +7,7 @@ export class AppointmentService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
+    
     return this.prisma.appointment.findMany({
       orderBy: { date: 'asc' },
       include: { user: true },
@@ -29,7 +30,6 @@ export class AppointmentService {
       throw new Error('Usuário não encontrado');
     }
 
-    // Agora o return está dentro do escopo da função
     return this.prisma.appointment.create({
       data: {
         name: user.name,
@@ -38,9 +38,22 @@ export class AppointmentService {
         time: dto.time,
         service: dto.service,
         userId,
+        status: 'PENDENTE', // 👈 padrão
       },
-      include: {
-        user: true,
+      include: { user: true },
+    });
+  }
+
+  async createByAdmin(dto: CreateAppointmentAdminDto) {
+    return this.prisma.appointment.create({
+      data: {
+        name: dto.name,
+        phone: dto.phone,
+        date: new Date(dto.date),
+        time: dto.time,
+        service: dto.service,
+        createdByAdmin: true,
+        status: 'PENDENTE', // 👈 padrão
       },
     });
   }
@@ -48,51 +61,36 @@ export class AppointmentService {
   async marcarComoConcluido(id: string) {
     return this.prisma.appointment.update({
       where: { id },
-      data: { concluido: true,
-        concludedAt: new Date()
-       },
+      data: { 
+        concludedAt: new Date(),
+        status: 'CONCLUIDO',
+      },
+    });
+  }
+
+  async cancelarAgendamento(id: string) {
+    return this.prisma.appointment.update({
+      where: { id },
+      data: {
+        cancelAt: new Date(),
+        status: 'CANCELADO',
+      },
     });
   }
 
   async findConcluidos() {
-  return this.prisma.appointment.findMany({
-    where: {
-      concluido: true,
-    },
-    orderBy: { date: 'desc' },
-    include: { user: true },
-  });
-}
-
-async createByAdmin(dto: CreateAppointmentAdminDto) {
-  // aqui o admin cria agendamento pra qualquer cliente
-  console.log('Recebido no backend:', dto);
-
-  return this.prisma.appointment.create({
-    data: {
-      name: dto.name,
-      phone: dto.phone,
-      date: new Date(dto.date),
-      time: dto.time,
-      service: dto.service,
-      createdByAdmin: true
-    }
-  });
-}
-async cancelarAgendamento(id: string) {
-  return this.prisma.appointment.update(
-    {
-      where: {id},
-      data: { status: 'CANCELADO' },
-
+    return this.prisma.appointment.findMany({
+      where: { status: 'CONCLUIDO' },
+      orderBy: { date: 'desc' },
+      include: { user: true },
     });
- 
-}
+  }
 
-async findCancelados() {
-  return this.prisma.appointment.findMany({
-    where: { status: 'CANCELADO' },
-  });
-}
-
+  async findCancelados() {
+    return this.prisma.appointment.findMany({
+      where: { status: 'CANCELADO' },
+      orderBy: { date: 'desc' },
+      include: { user: true },
+    });
+  }
 }
