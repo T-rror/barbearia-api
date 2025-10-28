@@ -25,13 +25,14 @@ export class AppointmentController {
   // Criação de agendamento normal (usuário logado)
   @UseGuards(AuthGuard)
   @Post()
+  
   async create(
     @Body() body: CreateAppointmentDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.id;
     const appointment = await this.appointmentService.create(body, userId);
-    return { success: true, appointment };
+    return { message: 'Agendamento criado com sucesso!' };
   }
 
   // Criação de agendamento por admin ou barbeiro
@@ -39,7 +40,7 @@ export class AppointmentController {
   @Post('admin')
   async createByAdmin(@Body() dto: CreateAppointmentAdminDto) {
     const appointment = await this.appointmentService.createByAdmin(dto);
-    return { success: true, appointment };
+    return { message: 'Agendamento criado por barbeiro!' };
   }
 
   // Listar todos os agendamentos (pendentes, concluídos e cancelados)
@@ -59,7 +60,7 @@ export class AppointmentController {
   @Get('by-date/:date')
   async findByDate(@Param('date') date: string) {
     const appointments = await this.appointmentService.findByDate(date);
-    return { success: true, appointments };
+    return { message: 'Agendamentos agrupados por data!' };
   }
 
   // Marcar agendamento como concluído
