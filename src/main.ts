@@ -12,7 +12,7 @@ async function bootstrap() {
       'https://barbearia-app-mateus-projects-4fb9ed17.vercel.app'
       
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     preflightContinue: false,
