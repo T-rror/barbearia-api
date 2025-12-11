@@ -8,7 +8,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'https://barbearia-app-git-vercel-react-38f6b1-mateus-projects-4fb9ed17.vercel.app'
+      'https://barbearia-hsax3kv0g-mateus-projects-4fb9ed17.vercel.app'
       
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
