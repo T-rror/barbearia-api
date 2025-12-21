@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { signinDTO, signUpDTO } from './dtos/auth';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -20,27 +24,27 @@ export class AuthService {
     });
 
     if (userAlreadyExists) {
-      throw new UnauthorizedException('User already exists');
+      throw new ConflictException('User already exists');
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this.prismaService.user.create({
-       data: {
-    name: data.name,
-    email: data.email,
-    phone: data.phone,
-    password: hashedPassword,
-    role: data.role ?? Role.CLIENTE,
-   },
-        
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        password: hashedPassword,
+        role: data.role ?? Role.CLIENTE,
+      },
+
       select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      role: true,
-    },
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+      },
     });
 
     return {
@@ -49,7 +53,6 @@ export class AuthService {
       email: user.email,
       phone: user.phone,
       role: user.role,
-     
     };
   }
 
@@ -74,24 +77,22 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role, 
+      role: user.role,
     });
 
     return {
-      accessToken, 
+      accessToken,
       role: user.role,
     };
-  } 
-
+  }
 
   async checkEmail(email: string) {
-  const user = await this.prismaService.user.findUnique({
-    where: { email },
-  });
+    const user = await this.prismaService.user.findUnique({
+      where: { email },
+    });
 
-  return {
-    exists: !!user,
-  };
-}
-
+    return {
+      exists: !!user,
+    };
+  }
 }
