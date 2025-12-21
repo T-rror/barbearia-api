@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import e from 'express';
 
 import { Public } from 'src/common/decorators/public.decorator';
+import { get } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -21,10 +22,16 @@ export class AuthController {
   async signin(@Body() body: signinDTO) {
     return this.authService.signin(body);
   }
+  @Get('me')
+  async me(@Req() req) {
+    return req.user;
+  }
 
   @Public()
   @Post('check-email')
   async checkemail(@Body('email') email: string) {
     return this.authService.checkEmail(email);
   }
+
+  
 }
