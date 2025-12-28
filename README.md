@@ -206,5 +206,5 @@ Aplicação de regras de negócio reais
 Mateus Fernandes
 Desenvolvedor Full Stack Júnior
 
-🔗 LinkedIn: https://www.linkedin.com/in/mateus-fernandes-ab36bb371?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+🔗 LinkedIn: https://www.linkedin.com/in/devmateusfernandes
 🔗 GitHub: https://github.com/t-rror
