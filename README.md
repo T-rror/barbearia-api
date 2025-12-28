@@ -1,98 +1,210 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+💈 Barbearia API — Back-end
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API back-end de um sistema de agendamento para barbearias, desenvolvida com foco em regras de negócio reais, segurança, organização de código e escalabilidade.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este projeto faz parte de uma aplicação full stack, sendo consumido pelo front-end disponível no repositório barbearia-app.
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+🚀 Visão Geral
 
-```bash
-$ npm install
-```
+A Barbearia API é responsável por toda a lógica de negócio da aplicação, incluindo:
 
-## Compile and run the project
+Gerenciamento de usuários
 
-```bash
-# development
-$ npm run start
+Autenticação e autorização
 
-# watch mode
-$ npm run start:dev
+Controle de agendamentos
 
-# production mode
-$ npm run start:prod
-```
+Persistência de dados
 
-## Run tests
+Regras para evitar conflitos de horários
 
-```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+A API foi pensada para simular um ambiente real de produção, seguindo boas práticas de arquitetura e desenvolvimento.
 
-# test coverage
-$ npm run test:cov
-```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+🛠️ Tecnologias Utilizadas
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Node.js — Ambiente de execução
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+NestJS — Framework para construção de APIs escaláveis
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+TypeScript — Tipagem estática e segurança
 
-## Resources
+Prisma ORM — Modelagem e acesso ao banco de dados
 
-Check out a few resources that may come in handy when working with NestJS:
+PostgreSQL — Banco de dados relacional
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+JWT (JSON Web Token) — Autenticação e proteção de rotas
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+🧠 Arquitetura e Organização
 
-## License
+A aplicação segue a arquitetura modular do NestJS, separando responsabilidades em:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Modules — Organização por domínio
+
+Controllers — Camada de entrada (HTTP)
+
+Services — Regras de negócio
+
+DTOs — Validação e tipagem de dados
+
+Prisma — Camada de acesso ao banco
+
+
+Essa estrutura facilita manutenção, testes e escalabilidade do sistema.
+
+
+---
+
+✨ Funcionalidades
+
+Cadastro e autenticação de usuários
+
+Autenticação baseada em JWT
+
+Controle de acesso por usuário
+
+Criação, listagem e atualização de agendamentos
+
+Regra de negócio para impedir agendamentos no mesmo horário
+
+Marcação de agendamentos como concluídos
+
+Histórico de agendamentos
+
+
+
+---
+
+🔐 Autenticação
+
+A API utiliza JWT para autenticação:
+
+Usuário realiza login
+
+Token JWT é gerado
+
+Token deve ser enviado no header das requisições protegidas
+
+
+Exemplo:
+
+Authorization: Bearer <token>
+
+
+---
+
+⚙️ Como Rodar o Projeto Localmente
+
+Pré-requisitos
+
+Node.js (versão LTS)
+
+npm ou yarn
+
+PostgreSQL instalado e em execução
+
+
+
+---
+
+Passo a passo
+
+# Clone o repositório
+git clone https://github.com/seu-usuario/barbearia-api.git
+
+# Acesse a pasta do projeto
+cd barbearia-api
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+
+# Gere o Prisma Client
+npx prisma generate
+
+# Execute as migrations
+npx prisma migrate dev
+
+# Inicie o servidor de desenvolvimento
+npm run start:dev
+
+A API estará disponível em:
+
+http://localhost:3001
+
+
+---
+
+🔐 Variáveis de Ambiente
+
+Exemplo de configuração:
+
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/barbearia"
+JWT_SECRET=sua_chave_secreta
+PORT=3001
+
+
+---
+
+📌 Integração com o Front-end
+
+O front-end desta aplicação está disponível no repositório:
+
+👉 barbearia-app
+
+A comunicação acontece via API REST, utilizando autenticação JWT para rotas protegidas.
+
+
+---
+
+📌 Status do Projeto
+
+🚧 Em desenvolvimento
+
+Próximos passos:
+
+Finalizar regras de negócio
+
+Implementar melhorias de segurança
+
+Preparação para deploy
+
+
+
+---
+
+📚 Aprendizados
+
+Este projeto contribuiu para o aprofundamento em:
+
+Arquitetura de APIs com NestJS
+
+Modelagem de banco de dados com Prisma
+
+Autenticação e autorização com JWT
+
+Aplicação de regras de negócio reais
+
+
+
+---
+
+👨‍💻 Autor
+
+Mateus Fernandes
+Desenvolvedor Full Stack Júnior
+
+🔗 LinkedIn: https://www.linkedin.com/in/mateus-fernandes-ab36bb371?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+🔗 GitHub: https://github.com/t-rror
