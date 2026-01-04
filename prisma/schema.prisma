@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,32 +7,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   name         String
   email        String        @unique
   password     String
+  phone        String
   role         Role          @default(CLIENTE)
   createdAt    DateTime      @default(now())
-  phone        String
+
   appointments Appointment[]
+  confirmedPayments Payment[] @relation("ConfirmedBy")
 }
 
 model Appointment {
-  id          String    @id @default(uuid()) @db.Uuid
-  name        String
-  phone       String
-  date        DateTime
-  time        String
-  service     String
-  createdAt   DateTime  @default(now())
-  concludedAt DateTime?
-  cancelAt    DateTime?
-  status    Status   @default(PENDENTE)
-  userId      String?   @db.Uuid
-  user        User?     @relation(fields: [userId], references: [id])
-  createdByAdmin Boolean @default(false) // ← novo campo
+  id              String    @id @default(uuid()) @db.Uuid
+  name            String
+  phone           String
+  date            DateTime
+  time            String
+  service         String
+
+  status          Status    @default(PENDENTE)
+
+  createdAt       DateTime  @default(now())
+  concludedAt     DateTime?
+  cancelAt        DateTime?
+
+  userId          String?   @db.Uuid
+  user            User?     @relation(fields: [userId], references: [id])
+
+  createdByAdmin  Boolean   @default(false)
+
+  payments        Payment[]
 }
+
+model Payment {
+  id              String         @id @default(uuid()) @db.Uuid
+
+  appointmentId   String         @db.Uuid
+  appointment     Appointment    @relation(fields: [appointmentId], references: [id])
+
+  method          PaymentMethod
+  status          PaymentStatus  @default(PENDENTE)
+  amount          Float
+
+  // Confirmação manual (ADM / Caixa)
+  confirmedById   String?        @db.Uuid
+  confirmedBy     User?          @relation(
+    "ConfirmedBy",
+    fields: [confirmedById],
+    references: [id]
+  )
+  confirmedAt     DateTime?
+
+  // Web3
+  txHash          String?
+
+  createdAt       DateTime       @default(now())
+}
+
 
 enum Role {
   CLIENTE
@@ -44,5 +78,18 @@ enum Role {
 enum Status {
   PENDENTE
   CONCLUIDO
+  CANCELADO
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+  CASH
+  CRYPTO
+}
+
+enum PaymentStatus {
+  PENDENTE
+  PAGO
   CANCELADO
 }
