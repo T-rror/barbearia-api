@@ -11,6 +11,8 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dtos/create-payments.dtos';
 import { AuthGuard } from '../auth/auth.guard';
 import { Request } from 'express';
+import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
+import { AuthUser } from 'src/auth/types/auth-user.type';
 
 @Controller('payments')
 export class PaymentsController {
@@ -26,13 +28,11 @@ export class PaymentsController {
   // ADM confirma pagamento manualmente
   @UseGuards(AuthGuard)
   @Post(':id/confirm')
-  confirm(
-    @Param('id') paymentId: string,
-    @Req() req: Request,
-  ) {
-    const adminId = req['user'].sub; // vem do JWT
-    const role = req['user'].role;
+  confirm(@Param('id') paymentId: string, @Req() req: AuthenticatedRequest) {
+    const user = req.user as AuthUser;
 
+    const adminId = user.id;
+    const role = user.role;
     if (role !== 'ADMIN') {
       throw new Error('Acesso negado');
     }

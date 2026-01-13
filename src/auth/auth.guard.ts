@@ -10,15 +10,13 @@ import { jwtConstants } from './constants';
 import { IS_PUBLIC_KEY } from 'src/common/decorators/public.decorator';
 import { Reflector } from '@nestjs/core';
 
-
-
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService
-, private reflector: Reflector
+  constructor(
+    private jwtService: JwtService,
+    private reflector: Reflector,
   ) {}
-  
-  
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
@@ -37,16 +35,18 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret,
-      }); 
+  const payload = await this.jwtService.verifyAsync(token, {
+    secret: jwtConstants.secret,
+  });
 
-      console.log('jwt decodificated', payload);
-     
-      request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
-    }
+  request['user'] = {
+    id: payload.sub,
+    role: payload.role,
+  };
+} catch {
+  throw new UnauthorizedException();
+}
+
     return true;
   }
 

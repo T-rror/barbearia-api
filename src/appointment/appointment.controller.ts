@@ -17,6 +17,8 @@ import {
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
 import { RolesGuard } from '../auth/admin.guards';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -36,7 +38,9 @@ export class AppointmentController {
   }
 
   // Criação de agendamento por admin ou barbeiro
-  @UseGuards(AuthGuard, new RolesGuard(['ADMIN', 'BARBEIRO']))
+
+@Roles(Role.ADMIN, Role.BARBEIRO)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post('admin')
   async createByAdmin(@Body() dto: CreateAppointmentAdminDto) {
     const appointment = await this.appointmentService.createByAdmin(dto);
