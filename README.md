@@ -4,7 +4,6 @@ API back-end de um sistema de agendamento para barbearias, desenvolvida com foco
 
 Este projeto faz parte de uma aplicação full stack, sendo consumido pelo front-end disponível no repositório barbearia-app.
 
-
 ---
 
 🚀 Visão Geral
@@ -21,9 +20,7 @@ Persistência de dados
 
 Regras para evitar conflitos de horários
 
-
 A API foi pensada para simular um ambiente real de produção, seguindo boas práticas de arquitetura e desenvolvimento.
-
 
 ---
 
@@ -41,8 +38,6 @@ PostgreSQL — Banco de dados relacional
 
 JWT (JSON Web Token) — Autenticação e proteção de rotas
 
-
-
 ---
 
 🧠 Arquitetura e Organização
@@ -59,9 +54,7 @@ DTOs — Validação e tipagem de dados
 
 Prisma — Camada de acesso ao banco
 
-
 Essa estrutura facilita manutenção, testes e escalabilidade do sistema.
-
 
 ---
 
@@ -81,7 +74,7 @@ Marcação de agendamentos como concluídos
 
 Histórico de agendamentos
 
-
+Controle mensal de entradas confirmadas, despesas e saldo
 
 ---
 
@@ -95,11 +88,9 @@ Token JWT é gerado
 
 Token deve ser enviado no header das requisições protegidas
 
-
 Exemplo:
 
 Authorization: Bearer <token>
-
 
 ---
 
@@ -107,43 +98,51 @@ Authorization: Bearer <token>
 
 Pré-requisitos
 
-Node.js (versão LTS)
+Node.js 20.19+, 22.12+ ou 24+
 
 npm ou yarn
 
-PostgreSQL instalado e em execução
-
-
+Docker com Compose, ou PostgreSQL instalado e em execução
 
 ---
 
 Passo a passo
 
 # Clone o repositório
+
 git clone https://github.com/seu-usuario/barbearia-api.git
 
 # Acesse a pasta do projeto
+
 cd barbearia-api
 
-# Instale as dependências
-npm install
-
 # Configure as variáveis de ambiente
+
 cp .env.example .env
 
-# Gere o Prisma Client
-npx prisma generate
+# Instale exatamente as dependências do lockfile
 
-# Execute as migrations
+npm ci
+
+# Inicie o PostgreSQL (opcional se já houver uma instância local)
+
+docker compose -f docker/docker-compose.yml up -d
+
+# Gere o Prisma Client
+
+npm run prisma:generate
+
+# Aplique as migrations no banco local (ação explícita)
+
 npx prisma migrate dev
 
 # Inicie o servidor de desenvolvimento
+
 npm run start:dev
 
 A API estará disponível em:
 
 http://localhost:3001
-
 
 ---
 
@@ -151,10 +150,27 @@ http://localhost:3001
 
 Exemplo de configuração:
 
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/barbearia"
-JWT_SECRET=sua_chave_secreta
+DATABASE_URL="postgresql://dev:dev@localhost:5432/barber_dev"
+JWT_SECRET=replace_me
 PORT=3001
+SERVICE_PRICES='{"corte": 50, "barba": 35}'
 
+Para produção, configure `JWT_SECRET` com uma chave aleatória de pelo menos 32
+caracteres. Por exemplo, gere uma com `openssl rand -base64 48`. A aplicação
+recusa segredos curtos em produção.
+
+Configure `SERVICE_PRICES` como um objeto JSON cujas chaves correspondem
+exatamente ao campo `service` dos agendamentos e cujos valores são os preços
+positivos daquele estabelecimento. O preço é calculado pela API; o campo
+`amount` enviado por clientes antigos é ignorado. Sem preço configurado para o
+serviço, a criação do pagamento é recusada. O exemplo inclui apenas `corte`;
+substitua e complete os valores com a tabela aprovada pela barbearia antes de
+usar outros serviços.
+
+Os comandos `npm run build`, `npm run lint`, `npm test` e `npm run test:e2e`
+executam build, análise estática, testes unitários e testes HTTP com dependências
+mockadas, respectivamente. O build não aplica migrations. Use
+`npm run prisma:migrate:deploy` apenas como etapa explícita de deploy.
 
 ---
 
@@ -166,6 +182,18 @@ O front-end desta aplicação está disponível no repositório:
 
 A comunicação acontece via API REST, utilizando autenticação JWT para rotas protegidas.
 
+---
+
+💰 Financeiro mensal
+
+O perfil `ADMIN` ou `BARBEIRO` pode consultar e lançar despesas no mês:
+
+- `GET /payments` lista pagamentos e os atendimentos associados.
+- `GET /finance/expenses?month=AAAA-MM` lista despesas do período.
+- `POST /finance/expenses` registra uma despesa com descrição, categoria, valor e data.
+
+O saldo mostrado pelo frontend é calculado como pagamentos confirmados menos
+despesas lançadas.
 
 ---
 
@@ -181,8 +209,6 @@ Implementar melhorias de segurança
 
 Preparação para deploy
 
-
-
 ---
 
 📚 Aprendizados
@@ -196,8 +222,6 @@ Modelagem de banco de dados com Prisma
 Autenticação e autorização com JWT
 
 Aplicação de regras de negócio reais
-
-
 
 ---
 

@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { signinDTO, signUpDTO } from './dtos/auth';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -18,9 +18,8 @@ export class AuthService {
 
   async signup(data: signUpDTO) {
     const userAlreadyExists = await this.prismaService.user.findUnique({
-      where: {
-        email: data.email,
-      },
+      where: { email: data.email },
+      select: { id: true },
     });
 
     if (userAlreadyExists) {
@@ -29,23 +28,39 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const user = await this.prismaService.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        password: hashedPassword,
-        role: data.role ?? Role.CLIENTE,
-      },
-
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-      },
-    });
+    let user: {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      role: Role;
+    };
+    try {
+      user = await this.prismaService.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          password: hashedPassword,
+          role: Role.CLIENTE,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Email já cadastrado');
+      }
+      throw error;
+    }
 
     return {
       id: user.id,
@@ -61,6 +76,7 @@ export class AuthService {
       where: {
         email: data.email,
       },
+      select: { id: true, role: true, password: true },
     });
 
     if (!user) {
@@ -74,10 +90,9 @@ export class AuthService {
     }
 
     const accessToken = await this.jwtService.signAsync({
-  sub: user.id,
-  role: user.role,
-});
-
+      sub: user.id,
+      role: user.role,
+    });
 
     return {
       accessToken,
@@ -88,6 +103,7 @@ export class AuthService {
   async checkEmail(email: string) {
     const user = await this.prismaService.user.findUnique({
       where: { email },
+      select: { id: true },
     });
 
     return {

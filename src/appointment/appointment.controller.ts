@@ -15,10 +15,11 @@ import {
   CreateAppointmentDto,
 } from './dtos/appointment';
 import { AuthGuard } from '../auth/auth.guard';
-import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
+import { AuthenticatedRequest } from '../common/types/authenticated-request';
 import { RolesGuard } from '../auth/admin.guards';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -27,48 +28,48 @@ export class AppointmentController {
   // Criação de agendamento normal (usuário logado)
   @UseGuards(AuthGuard)
   @Post()
-  
   async create(
     @Body() body: CreateAppointmentDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.id;
-    const appointment = await this.appointmentService.create(body, userId);
-    return { message: 'Agendamento criado com sucesso!' };
+    return this.appointmentService.create(body, userId);
   }
 
   // Criação de agendamento por admin ou barbeiro
 
-@Roles(Role.ADMIN, Role.BARBEIRO)
+  @Roles(Role.ADMIN, Role.BARBEIRO)
   @UseGuards(AuthGuard, RolesGuard)
   @Post('admin')
   async createByAdmin(@Body() dto: CreateAppointmentAdminDto) {
-    const appointment = await this.appointmentService.createByAdmin(dto);
-    return { message: 'Agendamento criado por barbeiro!' };
+    return this.appointmentService.createByAdmin(dto);
   }
 
   // Listar todos os agendamentos (pendentes, concluídos e cancelados)
-  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN, Role.BARBEIRO)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get()
   async findAll() {
     const agendamentos = await this.appointmentService.findAll();
 
-    const pendentes = agendamentos.filter(a => a.status === 'PENDENTE');
-    const concluidos = agendamentos.filter(a => a.status === 'CONCLUIDO');
-    const cancelados = agendamentos.filter(a => a.status === 'CANCELADO');
+    const pendentes = agendamentos.filter((a) => a.status === 'PENDENTE');
+    const concluidos = agendamentos.filter((a) => a.status === 'CONCLUIDO');
+    const cancelados = agendamentos.filter((a) => a.status === 'CANCELADO');
 
     return { success: true, pendentes, concluidos, cancelados };
   }
 
   // Listar agendamentos por data
+  @Public()
   @Get('by-date/:date')
   async findByDate(@Param('date') date: string) {
     const appointments = await this.appointmentService.findByDate(date);
-    return { message: 'Agendamentos agrupados por data!' };
+    return { appointments };
   }
 
   // Marcar agendamento como concluído
-  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN, Role.BARBEIRO)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id/concluir')
   async concluirAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
     const appointment = await this.appointmentService.marcarComoConcluido(id);
@@ -76,7 +77,8 @@ export class AppointmentController {
   }
 
   // Marcar agendamento como cancelado
-  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN, Role.BARBEIRO)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id/cancelar')
   async cancelarAgendamento(@Param('id', new ParseUUIDPipe()) id: string) {
     const appointment = await this.appointmentService.cancelarAgendamento(id);

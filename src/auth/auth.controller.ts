@@ -1,11 +1,9 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { signinDTO, signUpDTO } from './dtos/auth';
 import { AuthService } from './auth.service';
 
-import e from 'express';
-
-import { Public } from 'src/common/decorators/public.decorator';
-import { get } from 'http';
+import { Public } from '../common/decorators/public.decorator';
+import { AuthenticatedRequest } from '../common/types/authenticated-request';
 
 @Controller('auth')
 export class AuthController {
@@ -13,25 +11,23 @@ export class AuthController {
 
   @Public()
   @Post('signup')
-  async signup(@Body() body: signUpDTO) {
+  signup(@Body() body: signUpDTO) {
     return this.authService.signup(body);
   }
 
   @Public()
   @Post('signin')
-  async signin(@Body() body: signinDTO) {
+  signin(@Body() body: signinDTO) {
     return this.authService.signin(body);
   }
   @Get('me')
-  async me(@Req() req) {
+  me(@Req() req: AuthenticatedRequest) {
     return req.user;
   }
 
   @Public()
   @Post('check-email')
-  async checkemail(@Body('email') email: string) {
+  checkemail(@Body('email') email: string) {
     return this.authService.checkEmail(email);
   }
-
-  
 }

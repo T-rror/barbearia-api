@@ -6,8 +6,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Role } from '@prisma/client';
+import { AuthUser } from './types/auth-user.type';
 import { jwtConstants } from './constants';
-import { IS_PUBLIC_KEY } from 'src/common/decorators/public.decorator';
+import { IS_PUBLIC_KEY } from '../common/decorators/public.decorator';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -18,7 +20,9 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthUser }>();
 
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -35,17 +39,20 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-  const payload = await this.jwtService.verifyAsync(token, {
-    secret: jwtConstants.secret,
-  });
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        role: Role;
+      }>(token, {
+        secret: jwtConstants.secret,
+      });
 
-  request['user'] = {
-    id: payload.sub,
-    role: payload.role,
-  };
-} catch {
-  throw new UnauthorizedException();
-}
+      request.user = {
+        id: payload.sub,
+        role: payload.role,
+      };
+    } catch {
+      throw new UnauthorizedException();
+    }
 
     return true;
   }

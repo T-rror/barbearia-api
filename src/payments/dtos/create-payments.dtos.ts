@@ -1,4 +1,12 @@
-import { IsEnum, IsNumber, IsUUID, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsUUID,
+  IsOptional,
+  IsString,
+  IsPositive,
+  MaxLength,
+} from 'class-validator';
 import { PaymentMethod } from '@prisma/client';
 
 export class CreatePaymentDto {
@@ -8,11 +16,15 @@ export class CreatePaymentDto {
   @IsEnum(PaymentMethod)
   method: PaymentMethod;
 
-  @IsNumber()
-  amount: number;
+  // Accepted for compatibility with older clients; the API ignores it.
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
+  amount?: number;
 
   // usado apenas no Web3
   @IsOptional()
   @IsString()
+  @MaxLength(300)
   txHash?: string;
 }

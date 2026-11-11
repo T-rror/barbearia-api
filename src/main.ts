@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -6,13 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://barbearia-app-pi.vercel.app'
-    
-    
-      
-    ],
+    origin: ['http://localhost:3000', 'https://barbearia-app-pi.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -20,11 +15,16 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap();
-  
+void bootstrap();

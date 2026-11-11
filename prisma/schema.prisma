@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -61,6 +60,16 @@ model Payment {
   txHash String?
 
   createdAt DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(uuid()) @db.Uuid
+  description String
+  category    String
+  amount      Float
+  date        DateTime
+  createdAt   DateTime @default(now())
+  createdById String?  @db.Uuid
 }
 
 enum Role {

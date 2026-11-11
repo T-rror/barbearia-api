@@ -5,9 +5,10 @@ import { AppointmentModule } from './appointment/appointment.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthGuard } from './auth/auth.guard';
 import { PaymentsModule } from './payments/payments.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
-  imports: [AuthModule, AppointmentModule, PrismaModule, PaymentsModule],
+  imports: [AuthModule, AppointmentModule, PrismaModule, PaymentsModule, FinanceModule],
   controllers: [],
   providers: [
     {

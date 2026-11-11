@@ -6,13 +6,16 @@ import {
   Get,
   UseGuards,
   Req,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dtos/create-payments.dtos';
 import { AuthGuard } from '../auth/auth.guard';
-import { Request } from 'express';
-import { AuthenticatedRequest } from 'src/common/types/authenticated-request';
-import { AuthUser } from 'src/auth/types/auth-user.type';
+import { AuthenticatedRequest } from '../common/types/authenticated-request';
+import { AuthUser } from '../auth/types/auth-user.type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/admin.guards';
+import { Role } from '@prisma/client';
 
 @Controller('payments')
 export class PaymentsController {
@@ -21,29 +24,43 @@ export class PaymentsController {
   // Cliente ou ADM cria pagamento
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() dto: CreatePaymentDto) {
-    return this.paymentsService.create(dto);
+  create(@Body() dto: CreatePaymentDto, @Req() req: AuthenticatedRequest) {
+    const user = req.user as AuthUser;
+    return this.paymentsService.create(dto, user.id, user.role);
+  }
+
+  @Roles(Role.ADMIN, Role.BARBEIRO)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get()
+  findAll() {
+    return this.paymentsService.findAll();
   }
 
   // ADM confirma pagamento manualmente
-  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post(':id/confirm')
-  confirm(@Param('id') paymentId: string, @Req() req: AuthenticatedRequest) {
+  confirm(
+    @Param('id', ParseUUIDPipe) paymentId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const user = req.user as AuthUser;
 
-    const adminId = user.id;
-    const role = user.role;
-    if (role !== 'ADMIN') {
-      throw new Error('Acesso negado');
-    }
-
-    return this.paymentsService.confirmPayment(paymentId, adminId);
+    return this.paymentsService.confirmPayment(paymentId, user.id);
   }
 
   // Listar pagamentos de um agendamento
   @UseGuards(AuthGuard)
   @Get('appointment/:appointmentId')
-  findByAppointment(@Param('appointmentId') appointmentId: string) {
-    return this.paymentsService.findByAppointment(appointmentId);
+  findByAppointment(
+    @Param('appointmentId', ParseUUIDPipe) appointmentId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user as AuthUser;
+    return this.paymentsService.findByAppointment(
+      appointmentId,
+      user.id,
+      user.role,
+    );
   }
 }
