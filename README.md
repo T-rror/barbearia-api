@@ -154,6 +154,7 @@ DATABASE_URL="postgresql://dev:dev@localhost:5432/barber_dev"
 JWT_SECRET=replace_me
 PORT=3001
 SERVICE_PRICES='{"corte": 50, "barba": 35}'
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001,https://barbearia-app-pi.vercel.app
 
 Para produção, configure `JWT_SECRET` com uma chave aleatória de pelo menos 32
 caracteres. Por exemplo, gere uma com `openssl rand -base64 48`. A aplicação
@@ -163,9 +164,11 @@ Configure `SERVICE_PRICES` como um objeto JSON cujas chaves correspondem
 exatamente ao campo `service` dos agendamentos e cujos valores são os preços
 positivos daquele estabelecimento. O preço é calculado pela API; o campo
 `amount` enviado por clientes antigos é ignorado. Sem preço configurado para o
-serviço, a criação do pagamento é recusada. O exemplo inclui apenas `corte`;
-substitua e complete os valores com a tabela aprovada pela barbearia antes de
-usar outros serviços.
+serviço, a criação do pagamento é recusada. O exemplo inclui `corte` e `barba`;
+complete os preços dos demais serviços com a tabela aprovada pela barbearia.
+`CORS_ORIGINS` é uma lista separada por vírgulas dos endereços autorizados para
+chamadas de navegador. Configure nela os domínios de produção e preview usados
+pelo front-end.
 
 Os comandos `npm run build`, `npm run lint`, `npm test` e `npm run test:e2e`
 executam build, análise estática, testes unitários e testes HTTP com dependências
